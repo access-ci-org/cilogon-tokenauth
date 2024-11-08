@@ -7,12 +7,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import permissions
 from allauth.socialaccount.models import SocialAccount
 from requests_oauth2client import ClientSecretBasic
-from tokenauth.client import CiLogonClient
+from cilogon_tokenauth.client import CiLogonClient
 
-import tokenauth
-import tokenauth.exc
-import tokenauth.models
-import tokenauth.client
+import cilogon_tokenauth
+import cilogon_tokenauth.exc
+import cilogon_tokenauth.models
+import cilogon_tokenauth.client
 
 
 log = logging.getLogger(__name__)
@@ -93,15 +93,15 @@ def introspect_cilogon_token(raw_token):
     uuid 'sub' field on the token data. """
     log.debug(f'Received Token: {raw_token}')
     try:
-        ctoken = tokenauth.models.CachedToken.objects.get(pk=raw_token)
+        ctoken = cilogon_tokenauth.models.CachedToken.objects.get(pk=raw_token)
         if not ctoken.introspection_cache_expired:
             return ctoken
         if ctoken.token_expired:
             user = ctoken.user
             # If the token is expired, delete it from the cache
             # ctoken.delete_cached_token()
-            raise tokenauth.exc.TokenExpired(f'Token expired for user {user}')
-    except tokenauth.models.CachedToken.DoesNotExist:
+            raise cilogon_tokenauth.exc.TokenExpired(f'Token expired for user {user}')
+    except cilogon_tokenauth.models.CachedToken.DoesNotExist:
         ctoken = None
     try:
         log.debug('Cache Exp or new token, introspecting...')
@@ -109,7 +109,7 @@ def introspect_cilogon_token(raw_token):
         log.debug(f'{token_details}')
         if token_details['active'] is False:
             log.info('Auth failed, token is not active.')
-            raise tokenauth.exc.TokenInactive(
+            raise cilogon_tokenauth.exc.TokenInactive(
                     'Introspection revealed inactive '
                     'token.')
         if not ctoken:
@@ -118,7 +118,7 @@ def introspect_cilogon_token(raw_token):
             # CILogon  has a bug where the "exp" value is incorrect
             # So, for now, we're using "nbf"+900 to be the expiration
             # value, since lifetime seems to always be 900 seconds`
-            ctoken = tokenauth.models.CachedToken(
+            ctoken = cilogon_tokenauth.models.CachedToken(
                 id=raw_token, user=user,
                 # expires_at=token_details['exp'],
                 expires_at=token_details['nbf']+900,
@@ -145,7 +145,7 @@ def cilogon_introspect(raw_token):
         log.debug(f'Token details: {token_details}')
         log.debug(f'Is Token active: {token_details["active"]}')
         if token_details['active'] is False:
-            raise tokenauth.exc.TokenInactive(
+            raise cilogon_tokenauth.exc.TokenInactive(
                                         'Introspection revealed inactive '
                                         'token.')
         user_details = client.userinfo(raw_token)

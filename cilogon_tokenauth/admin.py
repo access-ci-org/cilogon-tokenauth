@@ -1,5 +1,5 @@
 from django.contrib import admin
-from tokenauth.models import *
+from cilogon_tokenauth.models import *
 
 # Register your models here.
 
