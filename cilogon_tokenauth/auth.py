@@ -49,7 +49,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 def get_cilogon_auth_client():
     return CiLogonClient.from_discovery_endpoint(
         "https://cilogon.org/.well-known/openid-configuration",
-        auth=ClientSecretBasic(settings.CLIENT_KEY, settings.CLIENT_SECRET),
+        auth=ClientSecretBasic(settings.CILOGON_CLIENT_KEY, settings.CILOGON_CLIENT_SECRET),
     )
 
 
@@ -138,7 +138,7 @@ def cilogon_introspect(raw_token):
     try:
         # In general, it's a bad idea to put these in your logs, so
         # only uncomment to debug installation, then recomment
-        # log.debug(f'{settings.CLIENT_KEY} secret {settings.CLIENT_SECRET}')
+        # log.debug(f'{settings.CILOGON_CLIENT_KEY} secret {settings.CILOGON_CLIENT_SECRET}')
         client = get_cilogon_auth_client()
         log.debug('Cache Exp or new token, introspecting...')
         token_details = client.introspect_token(raw_token)
