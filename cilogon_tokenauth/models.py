@@ -9,10 +9,6 @@ log = logging.getLogger(__name__)
 
 class CachedToken(models.Model):
 
-    ID_SCOPE = 'identifiers.globus.org'
-    SCOPE_PERMISSIONS = {
-    }
-
     id = models.CharField(max_length=256, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     scope = models.CharField(max_length=128)
