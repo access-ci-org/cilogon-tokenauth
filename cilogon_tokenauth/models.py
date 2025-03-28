@@ -24,7 +24,7 @@ class CachedToken(models.Model):
         last_use = time.time() - self.last_introspection
         log.debug(f'Last use was {last_use}')
         limit = settings.TOKENAUTH_INTROSPECTION_CACHE_EXPIRATION
-        return last_use > limit
+        return last_use > int(limit)
 
     @property
     def token_expired(self):
