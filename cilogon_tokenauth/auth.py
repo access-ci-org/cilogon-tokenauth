@@ -152,6 +152,10 @@ def cilogon_introspect(raw_token):
         log.debug(f'User Details: {user_details}')
     except Exception as e:
         log.exception(e)
+        try:
+            token_details
+        except NameError:
+            token_details = "No Token Details"
         raise AuthenticationFailed('Encountered an error with CILogon '
                                    f'{raw_token}{token_details}')
     return token_details, user_details
